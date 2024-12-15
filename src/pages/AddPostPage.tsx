@@ -7,53 +7,117 @@ import {
     IconButton,
 } from '@mui/material';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
+import axios from 'axios';
+import Cookies from 'js-cookie';
+
+interface Image {
+  imageName: string;
+  imageType: string;
+  imageData: string; // Base64 encoded image
+}
 
 const AddPostPage = () => {
     const [caption, setCaption] = useState('');
-    const [images, setImages] = useState<string[]>([]);
+    const [images, setImages] = useState<Image[]>([]); // Change state to Image array
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
     const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         const files = event.target.files;
         if (files) {
             Array.from(files).forEach((file) => {
+                // Check file type and size
+                if (!file.type.startsWith('image/')) {
+                    setError('Only image files are allowed');
+                    return;
+                }
+                if (file.size > 5 * 1024 * 1024) { // Limit to 5MB
+                    setError('File size exceeds 5MB');
+                    return;
+                }
+    
                 const reader = new FileReader();
                 reader.onload = () => {
                     if (reader.result) {
-                        setImages((prevImages) => [...prevImages, reader.result as string]);
+                        const image: Image = {
+                            imageName: file.name,
+                            imageType: file.type,
+                            imageData: reader.result as string,
+                        };
+                        setImages((prevImages) => [...prevImages, image]);
                     }
                 };
                 reader.readAsDataURL(file);
             });
         }
     };
+    
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
+        setLoading(true);
+        setError(null);
+        setSuccessMessage(null);
+
+        const token = Cookies.get('token');
+        const userId = Cookies.get('userId');
+
+        if (!userId) {
+            setError('User is not authenticated. Please log in.');
+            setLoading(false);
+            return;
+        }
+
         const postData = {
+            userId,
             caption,
-            images,
+            media: images.map((img) => ({
+                imageName: img.imageName,
+                imageType: img.imageType,
+                imageData: img.imageData,
+            })),
+            createdAt: new Date().toISOString(),
+            mediaType: 'IMAGE',
         };
 
-        console.log('Post Data:', postData);
-        // Add your logic to send this data to the server or process it further
+        try {
+            const response = await axios.post('http://localhost:8081/api/posts/create-post', postData, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            setSuccessMessage('Post created successfully!');
+            setCaption('');
+            setImages([]);
+        } catch (err) {
+            if (axios.isAxiosError(err)) {
+                setError(err.response?.data?.message || 'Failed to create post.');
+            } else {
+                setError('An unexpected error occurred.');
+            }
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
-        <Box
-            sx={{
-                maxWidth: '600px',
-                margin: '0 auto',
-                padding: '20px',
-                fontFamily: 'Arial, sans-serif',
-            }}
-        >
-            <Typography
-                variant="h5"
-                textAlign="center"
-                marginBottom={3}
-                fontWeight="bold"
-            >
+        <Box sx={{ maxWidth: '600px', margin: '0 auto', padding: '20px', fontFamily: 'Arial, sans-serif' }}>
+            <Typography variant="h5" textAlign="center" marginBottom={3} fontWeight="bold">
                 Add New Post
             </Typography>
+
+            {error && (
+                <Typography color="error" marginBottom={2}>
+                    {error}
+                </Typography>
+            )}
+            {successMessage && (
+                <Typography color="primary" marginBottom={2}>
+                    {successMessage}
+                </Typography>
+            )}
 
             <TextField
                 label="Caption"
@@ -104,7 +168,7 @@ const AddPostPage = () => {
                         }}
                     >
                         <img
-                            src={image}
+                            src={image.imageData}
                             alt={`Uploaded ${index + 1}`}
                             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                         />
@@ -117,8 +181,9 @@ const AddPostPage = () => {
                 color="primary"
                 fullWidth
                 onClick={handleSubmit}
+                disabled={loading}
             >
-                Submit Post
+                {loading ? 'Submitting...' : 'Submit Post'}
             </Button>
         </Box>
     );
