@@ -1,12 +1,10 @@
-// src/pages/Profile.tsx
-import React, { useEffect } from 'react';
-import { Container, Typography, Card, CardContent, Avatar, Box } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Container, Typography, Card, Avatar, Box } from '@mui/material';
 import { red } from '@mui/material/colors';
-import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import { useParams } from 'react-router-dom';
+import CardContentCust from '../components/medium/CardContentCust';
 
 interface User {
     id: string;
@@ -19,27 +17,24 @@ interface User {
 const Profile = () => {
     const navigate = useNavigate();
     const { userId } = useParams();
-
+    const [data, setData] = useState<any[]>([]);
     const [user, setUser] = useState<User | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
 
+    // Fetch user profile
     useEffect(() => {
         const token = Cookies.get('token');
-        
-
 
         const fetchUserProfile = async () => {
             try {
                 const response = await axios.get<User>(`http://localhost:8081/api/users/${userId}`, {
                     headers: {
-                        Authorization: `Bearer ${token}`, // Tambahkan token jika diperlukan oleh backend
+                        Authorization: `Bearer ${token}`,
                     },
                 });
 
-                setUser(response.data.data.user); // Atur data pengguna ke state
-
-                console.log(response.data.data.user);
+                setUser(response.data.data.user);
             } catch (err) {
                 if (axios.isAxiosError(err)) {
                     setError(err.response?.data?.message || 'Failed to fetch user profile.');
@@ -47,27 +42,30 @@ const Profile = () => {
                     setError('An unexpected error occurred.');
                 }
             } finally {
-                setLoading(false); // Atur loading selesai
+                setLoading(false);
             }
         };
 
         fetchUserProfile();
-    }, [navigate]);
+    }, [userId]);
 
-    if (loading) {
-        return <div>Loading...</div>;
-    }
+    // Fetch user posts
+    useEffect(() => {
+        if (!userId) return;
 
-    if (error) {
-        return <div>Error: {error}</div>;
-    }
-
-    // Sample profile data (you can replace this with dynamic data)
-    // const user = {
-    //     name: "John Doe",
-    //     bio: "Web developer and tech enthusiast.",
-    //     avatar: "", // Add a URL for the avatar if available
-    // };
+        axios.get(`http://localhost:8081/api/posts/user/${userId}/posts`)
+            .then((response) => {
+                if (response.data.code === "200") {
+                    setData(response.data.data.posts);
+                    console.log("print data",response.data.data.posts);
+                } else {
+                    console.error('Failed to fetch posts');
+                }
+            })
+            .catch((error) => {
+                console.error('Error fetching posts:', error);
+            });
+    }, [userId]);
 
     const handleBackToHome = () => {
         navigate('/dashboard');
@@ -86,12 +84,32 @@ const Profile = () => {
                     {user?.bio}
                 </Typography>
                 <Card sx={{ marginTop: 3, bgcolor: '#181818' }}>
-                    <CardContent>
-                        <Typography variant="h6" sx={{ color: 'white' }}>
-                            Recent Posts
-                        </Typography>
-                        {/* Display recent posts here */}
-                    </CardContent>
+                    <Typography variant="h6" sx={{ color: 'white' }}>
+                        Recent Posts
+                    </Typography>
+                    <Box display="flex" justifyContent="center" alignItems="center" mt="5%" flexDirection="column" gap={6}>
+                        <Box>
+                            {data.map((item) => {
+                                const imageData = Array.isArray(item.media) && item.media.length > 0
+                                    ? item.media[0].imageData // Access media instead of mediaUrl
+                                    : null;
+
+                                return (
+                                    <CardContentCust
+                                        key={item.id} // Use unique post id
+                                        title={user.username}
+                                        date={item.createdAt}
+                                        images={imageData ? [imageData] : []}
+                                        description={item.caption}
+                                        comments={item.comments}
+                                        likes={item.likes}
+                                        userid={user.id}
+                                        postId={item.id} // Use post id instead of postId
+                                    />
+                                );
+                            })}
+                        </Box>
+                    </Box>
                 </Card>
             </Box>
             <Box display="flex" justifyContent="center" sx={{ marginTop: 3 }}>

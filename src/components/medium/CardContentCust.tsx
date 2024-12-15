@@ -154,7 +154,7 @@ export default function CardContentCust({
                         </IconButton>
                     }
                     title={title}
-                    subheader={date}
+                    subheader={new Date(date).toLocaleDateString()}
                     sx={{
                         '& .MuiCardHeader-subheader': {
                             color: 'white',
