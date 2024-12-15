@@ -2,6 +2,7 @@ import { Box, Button, FormControl, TextField, Typography, CircularProgress } fro
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import Cookies from "js-cookie";
+import axios from 'axios';
 
 export default function LoginPage() {
     const navigate = useNavigate();
@@ -13,14 +14,21 @@ export default function LoginPage() {
     const handleLogin = async () => {
         setLoading(true);
         try {
-            // const response = await Login(email, password);
-            const response = {
-                code: '200',
-                token: 'abcde-2139'
-            };
 
-            if (response.code === '200') {
-                Cookies.set('accessToken', response.token);
+            const payload = {
+                email,
+                password,
+            };
+    
+            console.log(payload);
+            const response = await axios.post('http://localhost:8081/api/login', payload, {
+                headers: { 'Content-Type': 'application/json' },
+            });
+
+            if (response.data.code === '200') {
+                const token = "pppppppppppp"
+                Cookies.set('userId', response.data.data.userId);
+                Cookies.set('accessToken', token);
                 navigate('/dashboard', { state: { loginSuccess: true } });
             } else {
                 setError('Login failed. Please check your credentials.');

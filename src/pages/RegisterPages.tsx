@@ -1,9 +1,11 @@
 import { Box, Button, FormControl, TextField, Typography, CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import axios from 'axios';
 
 export default function RegisterPage() {
     const navigate = useNavigate();
+    const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -12,24 +14,37 @@ export default function RegisterPage() {
 
     const handleRegister = async () => {
         setLoading(true);
+        setError(''); // Reset error message on each attempt
+
+        if (password !== confirmPassword) {
+            setError("Passwords don't match.");
+            setLoading(false);
+            return;
+        }
+
+        const payload = {
+            username,
+            password,
+            email,
+            profilePicture: '',
+            bio: '',
+        };
+
+        console.log(payload);
+
         try {
-            if (password !== confirmPassword) {
-                setError("Passwords don't match.");
-                setLoading(false);
-                return;
-            }
+            const response = await axios.post('http://localhost:8081/api/users/register', payload, {
+                headers: { 'Content-Type': 'application/json' },
+            });
 
-            // Simulate a successful registration response
-            const response = { code: '200', message: 'Registration successful' };
-
-            if (response.code === '200') {
-                navigate('/login'); // Redirect to login page after successful registration
+            if (response.data.code === "200") {
+                navigate('/login'); // Redirect to login page on success
             } else {
-                setError('Registration failed. Please try again.');
+                setError(response.data.message || 'Registration failed. Please try again.');
             }
         } catch (err: any) {
             console.error('Error during registration:', err);
-            setError(err.message || 'Registration failed. Please try again.');
+            setError(err.response?.data?.message || 'Registration failed. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -66,6 +81,20 @@ export default function RegisterPage() {
                         {error}
                     </Typography>
                 )}
+                <FormControl sx={{ width: '100%', mt: 3 }}>
+                    <TextField
+                        label="Username"
+                        placeholder="Enter your username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        fullWidth
+                        sx={{
+                            bgcolor: '#333',
+                            '& .MuiInputBase-input': { color: '#fff' },
+                            borderRadius: '12px',
+                        }}
+                    />
+                </FormControl>
 
                 <FormControl sx={{ width: '100%', mt: 3 }}>
                     <TextField
