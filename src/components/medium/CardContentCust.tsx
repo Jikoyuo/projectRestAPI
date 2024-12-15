@@ -64,6 +64,7 @@ export default function CardContentCust({title, date, images, description, comme
     const navigate = useNavigate();
 
     useEffect(() => {
+        console.log('images', images);
         if (Array.isArray(likes)) {
             // Check if the user has already liked the post by ensuring 'likedBy' is defined
             console.log('Likes array:', likes);
@@ -186,10 +187,16 @@ export default function CardContentCust({title, date, images, description, comme
                             afterChange={handleSlideChange}
                         >
                             {images.slice(0, 5).map((image, index) => (
-                                <div key={index}>
-                                    <CardMedia component="img" height="194" image={image} alt={`image-${index + 1}`} onClick={handleCardClick} />
-                                </div>
-                            ))}
+                            <div key={index}>
+                                <CardMedia
+                                    component="img"
+                                    height="194"
+                                    image={`data:image/png;base64,${image.imageData}`}
+                                    alt={`image-${index + 1}`}
+                                    onClick={handleCardClick}
+                                />
+                            </div>
+                        ))}
                         </Slider>
                         <Typography
                             sx={{

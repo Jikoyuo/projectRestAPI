@@ -37,7 +37,7 @@ export default function DashboardPage() {
             .then((response) => {
                 if (response.data.code === "200") {
                     setData(response.data.data);
-                    console.log(response.data.data);
+                    console.log(response.data.mediaUrl);
                 } else {
                     console.error('Failed to fetch data');
                 }
@@ -130,7 +130,7 @@ export default function DashboardPage() {
                             key={item.postId}
                             title={item.user.username}
                             date={item.createdAt}
-                            images={item.mediaUrl.map((media: any) => media.imageName)}
+                            images={item.mediaUrl}
                             description={item.caption}
                             comments={item.comments}
                             likes={item.likes}
