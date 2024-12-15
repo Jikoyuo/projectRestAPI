@@ -1,36 +1,45 @@
-// src/pages/PostDetail.tsx
-import React, { useState } from 'react';
-import { Container, Typography, Box, Card, CardContent, Avatar, TextField, Button } from '@mui/material';
-import { red } from '@mui/material/colors';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Container, Typography, Box, Card, CardContent, TextField, Button } from '@mui/material';
+import axios from 'axios';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const PostDetail = () => {
     const navigate = useNavigate();
-
-    // Sample post data (you can replace this with dynamic data)
-    const post = {
-        title: "Post Title",
-        date: "December 15, 2024",
-        images: [
-            "https://via.placeholder.com/400",
-            "https://via.placeholder.com/400",
-        ],
-        description: "This is the description of the post. It contains information about the post.",
-        likes: 100,
-        comments: [
-            "Great post!",
-            "Very informative.",
-            "I love this!",
-        ],
-    };
-
+    const { postId } = useParams(); // To get postId from the URL
+    const [post, setPost] = useState<any>(null); // Store post data
     const [commentText, setCommentText] = useState('');
-    const [comments, setComments] = useState(post.comments);
+    const [comments, setComments] = useState<{ id: string; content: string; createdAt: string }[]>([]);
+
+    useEffect(() => {
+        // Fetch post data from the API
+        axios.get(`http://localhost:8081/api/posts/post/${postId}`)
+            .then((response) => {
+                const postData = response.data.data.post;
+                setPost(postData);
+                setComments(postData.comments || []); // Set comments array from API
+            })
+            .catch((error) => {
+                console.error("Error fetching post:", error);
+            });
+    }, [postId]); // Fetch data when postId changes
 
     const handleAddComment = () => {
         if (commentText.trim()) {
-            setComments([...comments, commentText]);
-            setCommentText('');
+            const payload = {
+                postId,
+                userId: "dummyUserId", // Replace with actual userId
+                content: commentText,
+            };
+
+            axios.post('http://localhost:8081/api/comments', payload)
+                .then((response) => {
+                    const newComment = response.data.data.comment;
+                    setComments([...comments, newComment]); // Add new comment to the list
+                    setCommentText(''); // Clear the input
+                })
+                .catch((error) => {
+                    console.error('Error adding comment:', error);
+                });
         }
     };
 
@@ -38,29 +47,35 @@ const PostDetail = () => {
         navigate('/dashboard');
     };
 
+    if (!post) {
+        return <Typography variant="h6" sx={{ color: 'white' }}>Loading...</Typography>;
+    }
+
     return (
         <Container sx={{ paddingTop: '20px' }}>
             <Box display="flex" justifyContent="center" flexDirection="column">
                 <Typography variant="h4" sx={{ color: 'white' }}>
-                    {post.title}
+                    {post.caption}
                 </Typography>
                 <Typography variant="body1" sx={{ marginTop: 1, color: 'white' }}>
-                    {post.date}
+                    {new Date(post.createdAt).toLocaleDateString()} {/* Format the date */}
                 </Typography>
 
                 <Box display="flex" justifyContent="center" sx={{ marginTop: 3 }}>
-                    {post.images.map((image, index) => (
-                        <img key={index} src={image} alt={`Post image ${index + 1}`} style={{ width: '100%', maxHeight: '400px', marginBottom: '15px' }} />
+                    {post.media.map((image: any, index: number) => (
+                        <img
+                            key={index}
+                            src={`data:image/png;base64,${image.imageData}`}
+                            alt={`Post image ${index + 1}`}
+                            style={{ width: '100%', maxHeight: '400px', marginBottom: '15px' }}
+                        />
                     ))}
                 </Box>
 
                 <Card sx={{ bgcolor: '#181818', marginTop: 3 }}>
                     <CardContent>
-                        <Typography variant="body1" sx={{ color: 'white' }}>
-                            {post.description}
-                        </Typography>
-                        <Typography variant="h6" sx={{ marginTop: 2, color: 'white' }}>
-                            {post.likes} Likes
+                        <Typography variant="h6" sx={{ color: 'white' }}>
+                            {post.likes.length} Likes
                         </Typography>
                         <Typography variant="h6" sx={{ marginTop: 2, color: 'white' }}>
                             {comments.length} Comments
@@ -87,16 +102,24 @@ const PostDetail = () => {
                         <Typography variant="h6" sx={{ color: 'white' }}>
                             Comments
                         </Typography>
-                        {comments.map((comment, index) => (
-                            <Typography key={index} variant="body2" sx={{ color: 'white', marginTop: 1 }}>
-                                {comment}
-                            </Typography>
+                        {comments.map((comment) => (
+                            <Box key={comment.id} sx={{ marginBottom: 2 }}>
+                                <Typography variant="body2" sx={{ color: 'white' }}>
+                                    {comment.content}
+                                </Typography>
+                                <Typography variant="caption" sx={{ color: '#888' }}>
+                                    {new Date(comment.createdAt).toLocaleString()}
+                                </Typography>
+                            </Box>
                         ))}
                     </CardContent>
                 </Card>
 
                 <Box display="flex" justifyContent="center" sx={{ marginTop: 3 }}>
-                    <button onClick={handleBackToHome} style={{ color: 'white', backgroundColor: 'gray', border: 'none', padding: '10px 20px', cursor: 'pointer' }}>
+                    <button
+                        onClick={handleBackToHome}
+                        style={{ color: 'white', backgroundColor: 'gray', border: 'none', padding: '10px 20px', cursor: 'pointer' }}
+                    >
                         Back to Home
                     </button>
                 </Box>

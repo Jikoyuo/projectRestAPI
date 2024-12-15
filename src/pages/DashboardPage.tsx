@@ -1,4 +1,4 @@
-import { Box, TextField } from '@mui/material';
+import { Box, TextField, Button } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import NavbarCust from '../components/navbar/NavbarCust';
 import SidebarCust from '../components/navbar/SidebarCust';
@@ -8,6 +8,7 @@ import ChatModal from '../components/medium/ChatModal';
 import WeatherWidget from '../components/weather/WeatherWidget';
 import AlertSuccess from '../components/small/AlertSuccess';
 import { useLocation, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 export default function DashboardPage() {
     const [isFriendListOpen, setFriendListOpen] = useState(false);
@@ -32,122 +33,59 @@ export default function DashboardPage() {
     };
 
     useEffect(() => {
-        const dummyData = [
-            {
-                id: 1,
-                title: "Info mabar",
-                date: "September 14, 2016",
-                image: ["/src/assets/img/file.jpg"],
-                description: "This impressive paella is a perfect party dish and a fun meal to cook together with your guests.",
-                comment: ["tes"]
-            },
-            {
-                id: 2,
-                title: "Gabut nih",
-                date: "March 10, 2020",
-                image: ["/src/assets/img/file.jpg"],
-                description: "A quick and easy stir fry recipe that's packed with fresh vegetables.",
-                comment: ["tes", "LUCU !"]
-            },
-            {
-                id: 3,
-                title: "Ganyang FUFUFAFA",
-                date: "September 14, 2016",
-                image: ["/src/assets/img/file.jpg"],
-                description: "This impressive paella is a perfect party dish and a fun meal to cook together with your guests.",
-                comment: ["tes"]
-            },
-            {
-                id: 4,
-                title: "M6 ?",
-                date: "March 10, 2020",
-                image: ["/src/assets/img/file.jpg"],
-                description: "A quick and easy stir fry recipe that's packed with fresh vegetables.",
-                comment: ["tes", "LUCU !"]
-            },
-            {
-                id: 5,
-                title: "Douyin",
-                date: "September 14, 2016",
-                image: ["/src/assets/img/file.jpg"],
-                description: "This impressive paella is a perfect party dish and a fun meal to cook together with your guests.",
-                comment: ["tes"]
-            },
-            {
-                id: 6,
-                title: "Prankster",
-                date: "March 10, 2020",
-                image: ["/src/assets/img/file.jpg"],
-                description: "A quick and easy stir fry recipe that's packed with fresh vegetables.",
-                comment: ["tes", "LUCU !"]
-            },
-            {
-                id: 7,
-                title: "Mulyono penipu ?",
-                date: "September 14, 2016",
-                image: ["/src/assets/img/file.jpg"],
-                description: "This impressive paella is a perfect party dish and a fun meal to cook together with your guests.",
-                comment: ["tes"]
-            },
-            {
-                id: 8,
-                title: "Kim Jong Un menguasai korea selatan",
-                date: "March 10, 2020",
-                image: ["/src/assets/img/file.jpg"],
-                description: "tes search, anjay",
-                comment: ["tes", "LUCU !"]
-            },
-            {
-                id: 9,
-                title: "Malaydesh",
-                date: "September 14, 2016",
-                image: ["/src/assets/img/file.jpg"],
-                description: "This impressive paella is a perfect party dish and a fun meal to cook together with your guests.",
-                comment: ["tes"]
-            },
-            {
-                id: 10,
-                title: "Manchester United Treble Winner !",
-                date: "March 10, 2020",
-                image: ["/src/assets/img/file.jpg"],
-                description: "A quick and easy stir fry recipe that's packed with fresh vegetables.",
-                comment: ["tes", "LUCU !"]
-            },
-        ];
-        setData(dummyData);
+        axios.get('http://localhost:8081/api/posts/home-page')
+            .then((response) => {
+                if (response.data.code === "200") {
+                    setData(response.data.data);
+                    console.log(response.data.data);
+                } else {
+                    console.error('Failed to fetch data');
+                }
+            })
+            .catch((error) => {
+                console.error('Error fetching data:', error);
+            });
     }, []);
 
     const handleSearch = (query: string) => {
         setSearchQuery(query);
     };
 
-    const filteredData = data.filter((item) => {
+    const filteredData = (data && Array.isArray(data)) ? data.filter((item) => {
         return (
-            item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            item.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            item.comment.some((comment: string) => comment.toLowerCase().includes(searchQuery.toLowerCase()))
+            item.caption.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            item.user.username.toLowerCase().includes(searchQuery.toLowerCase())
         );
-    });
+    }) : [];
 
     useEffect(() => {
         if (location.state && location.state.loginSuccess) {
-            setAlertOpen(true);
-            setTimeout(() => setAlertOpen(false), 2000);
-            navigate(location.pathname, { replace: true, state: undefined });
+            showSuccessAlert()
+
+            navigate(location.pathname, { replace: true, state: undefined }) //clear state
         }
-    }, [location.state, navigate]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [location.state, navigate])
 
     return (
         <Box>
-            <NavbarCust title="Home" />
+            <NavbarCust title='Home' />
             <SidebarCust handleOpenChat={() => setFriendListOpen(true)} />
             <AlertSuccess
                 open={alertOpen}
                 title="Success!"
                 description="Your action was completed successfully."
-                onClose={() => setAlertOpen(false)}
+                onClose={handleAlertClose}
             />
-            <Box display="flex" justifyContent="center" alignItems="center" mt={3} sx={{ width: '100%' }}>
+
+            <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                mt={3}
+                sx={{ width: '100%' }}
+
+            >
                 <TextField
                     label="Search Username or Tweet"
                     variant="outlined"
@@ -159,46 +97,46 @@ export default function DashboardPage() {
                         '& .MuiOutlinedInput-root': {
                             bgcolor: '#2c2c2c',
                             borderRadius: '16px',
-                            '& fieldset': { borderColor: '#ccc' },
-                            '&:hover fieldset': { borderColor: '#888' },
-                            '&.Mui-focused fieldset': { borderColor: '#2c2c2c' },
+                            '& fieldset': {
+                                borderColor: '#ccc',
+                            },
+                            '&:hover fieldset': {
+                                borderColor: '#888',
+                            },
+                            '&.Mui-focused fieldset': {
+                                borderColor: '#2c2c2c',
+                            },
                         },
-                        '& .MuiInputLabel-root': { color: 'white' },
-                        '& .MuiInputLabel-root.Mui-focused': { color: 'white' },
-                        '& .MuiOutlinedInput-input': { color: 'white' },
+                        '& .MuiInputLabel-root': {
+                            color: 'white',
+                        },
+                        '& .MuiInputLabel-root.Mui-focused': {
+                            color: 'white',
+                        },
                     }}
                 />
+
             </Box>
 
-            <Box ml={'15%'} display="flex" justifyContent="center" alignItems="center" mt="5%" flexDirection="column" gap={6} sx={{
-                '@media (max-width: 600px)': {
-                    width: '70%',
-                    gap: 3,
-                    ml: '17%'
-                },
-                '@media (min-width: 600px) and (max-width: 960px)': {
-                    width: '70%',
-                },
-                '@media (min-width: 960px)': {
-                    width: '70%',
-                },
-            }}>
-                <Box>
+            <Box display="flex" justifyContent="center" alignItems="center" mt="5%" flexDirection="column" gap={6}>
+                <Box  >
                     {filteredData.map((item) => (
+                        console.log(item.postId),
                         <CardContentCust
-                            key={item.id}
-                            title={item.title}
-                            date={item.date}
-                            images={item.image}
-                            description={item.description}
-                            comments={item.comment}
+                            key={item.postId}
+                            title={item.user.username}
+                            date={item.createdAt}
+                            images={item.mediaUrl.map((media: any) => media.imageName)}
+                            description={item.caption}
+                            comments={item.comments}
+                            likes={item.likes}
+                            postId={item.postId}
                         />
                     ))}
                 </Box>
             </Box>
 
-
-            {/* <WeatherWidget /> */}
+            <WeatherWidget />
 
             <FriendListModal
                 open={isFriendListOpen}
