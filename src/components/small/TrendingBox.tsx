@@ -9,24 +9,25 @@ const TrendingBox: React.FC<TrendingBoxProps> = ({ trendingData }) => {
     return (
         <Box
             sx={{
-                position: 'fixed',  // Membuat box tetap berada di tempat meskipun halaman digulir
-                top: 250,             // Jarak dari atas
+                position: 'fixed',
+                top: 230,
                 width: '100%',
                 maxWidth: 400,
-                bgcolor: 'white',
+                bgcolor: '#2c2c2c',
                 boxShadow: 3,
                 padding: 2,
-                zIndex: 10,          // Menjaga box tetap di atas konten lain jika ada overlap
+                zIndex: 10,
+                borderRadius: '16px'
             }}
         >
-            <Typography variant="h6" gutterBottom>
+            <Typography color='white' variant="h6" gutterBottom>
                 Trending Posts
             </Typography>
             {trendingData.map((item) => (
-                <Card key={item.id} sx={{ marginBottom: 2 }}>
+                <Card key={item.id} sx={{ marginBottom: 2, bgcolor: '#181818', color: 'white' }}>
                     <CardContent>
-                        <Typography variant="subtitle1">{item.title}</Typography>
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography color='white' variant="subtitle1">{item.title}</Typography>
+                        <Typography color='white' variant="body2">
                             {item.description}
                         </Typography>
                     </CardContent>
