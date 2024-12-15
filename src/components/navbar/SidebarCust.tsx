@@ -16,7 +16,6 @@ export default function SidebarCust({ handleOpenChat }: SidebarCustProps) {
     const navigate = useNavigate();
     const isMobile = useMediaQuery('(max-width:800px)');
 
-    // Define icon size based on screen size
     const iconSize = isMobile ? 'small' : 'large';
 
     return (

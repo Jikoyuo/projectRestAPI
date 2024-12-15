@@ -17,7 +17,7 @@ interface WeatherData {
 
 const WeatherWidget: React.FC = () => {
     const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
-    const isMobile = useMediaQuery('(max-width:600px)'); // Check if the screen size is mobile
+    const isMobile = useMediaQuery('(max-width:840px)'); 
 
     useEffect(() => {
         if (navigator.geolocation) {
@@ -43,22 +43,39 @@ const WeatherWidget: React.FC = () => {
         <Box sx={weatherWidgetStyles}>
             {weatherData ? (
                 <Paper sx={weatherPaperStyles} elevation={3}>
-                    <Box sx={{ display: 'flex', flexDirection: { xs: 'row', sm: 'column' }, alignItems: 'center' }}>
-                        <Typography variant="h6" sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}>{weatherData.name}</Typography>
-                        {/* Only show description if not on mobile */}
-                        {!isMobile && (
-                            <Typography variant="body2" sx={{ fontSize: { xs: '0.8rem', sm: '1rem' } }}>{weatherData.weather[0].description}</Typography>
-                        )}
-                        <Typography variant="h5" sx={{ fontSize: { xs: '1.5rem', sm: '2rem' } }}>{weatherData.main.temp}°C</Typography>
+                    <Box sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        '@media (max-width: 840px)': {
+                            flexDirection: 'row',
+                        }
+                    }
+                    }
+                    >
+                        <Typography variant="h2" sx={{ fontSize: { xs: '1rem', sm: '1rem' } }}>{weatherData.name}</Typography>
 
-                        <img
-                            src={`http://openweathermap.org/img/wn/${weatherData.weather[0].icon}.png`}
-                            alt={weatherData.weather[0].description}
-                            style={{ width: '50px', height: '50px', marginTop: '10px' }}
-                        />
+                        {isMobile && (
+                            <img
+                                src={`http://openweathermap.org/img/wn/${weatherData.weather[0].icon}.png`}
+                                alt={weatherData.weather[0].description}
+                                style={{ width: '40px', height: '40px', marginTop: '10px' }}
+                            />
+                        )}
+
+                        {!isMobile && (
+                            <>
+                                {/* <Typography variant="body2" sx={{ fontSize: { xs: '0.8rem', sm: '1rem' } }}>{weatherData.weather[0].description}</Typography> */}
+                                <Typography variant="h5" sx={{ fontSize: { xs: '1.5rem', sm: '2rem' } }}>{weatherData.main.temp}°C</Typography>
+                                <img
+                                    src={`http://openweathermap.org/img/wn/${weatherData.weather[0].icon}.png`}
+                                    alt={weatherData.weather[0].description}
+                                    style={{ width: '50px', height: '50px', marginTop: '10px' }}
+                                />
+                            </>
+                        )}
                     </Box>
 
-                    {/* Show particles effect for rain */}
                     {weatherData.weather[0].main.toLowerCase() === "rain" && (
                         <Particles
                             options={{
@@ -97,55 +114,56 @@ const WeatherWidget: React.FC = () => {
                 </Paper>
             ) : (
                 <Typography variant="body2">Loading weather...</Typography>
-            )}
-        </Box>
+            )
+            }
+        </Box >
     );
 };
 
 const weatherWidgetStyles = {
     position: 'fixed' as 'fixed',
-    top: '20px',
-    right: '20px',
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    top: '50px',
+    right: ' 20px',
+    backgroundColor: 'transparent',
     color: 'white',
     padding: '5px',
     borderRadius: '8px',
     zIndex: 1000,
-    boxShadow: '0px 4px 10 px rgba(0, 0, 0, 0.5)',
+    boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.5)',
     animation: 'fadeIn 2s ease-out',
-    width: '80px', // Ukuran tetap untuk widget di desktop
-    height: '60px', // Ukuran tetap untuk widget di desktop
+    width: '80px',
+    height: '60px',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    '@media (max-width: 600px)': {
+    '@media (max-width: 840px)': {
         top: '10px',
-        right: '10px', // Posisikan lebih dekat ke kanan
-        width: '120px', // Ukuran lebih besar di mobile untuk menampung semua konten
-        height: 'auto', // Sesuaikan tinggi di mobile
-        padding: '5px', // Sesuaikan padding di mobile
-        flexDirection: 'row', // Set menjadi row agar ikon dan data saling sejajar
-        justifyContent: 'space-between', // Beri jarak antar elemen di row
-        alignItems: 'center', // Rata tengah vertikal
-        backgroundColor: 'red'
+        right: '10px',
+        width: '120px',
+        height: 'auto',
+        padding: '5px',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        backgroundColor: 'transparent',
     }
 };
 
 const weatherPaperStyles = {
     padding: '15px',
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    backgroundColor: 'transparent',
     borderRadius: '8px',
     color: 'white',
     textAlign: 'center',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    '@media (max-width: 600px)': {
-        padding: 0, // Adjust padding for smaller screens
-        flexDirection: 'row', // Change to row for mobile\
+    '@media (max-width: 840px)': {
+        padding: 0,
+        flexDirection: 'column',
         backgroundColor: 'inherit',
-        justifyContent: 'space-between', // Space out elements
+        justifyContent: 'space-between',
         mr: 2
     }
 };

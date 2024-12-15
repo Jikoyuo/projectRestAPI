@@ -13,25 +13,25 @@ export default function NavbarCust({ title }: NavbarCustProps) {
         position: 'sticky',
         left: 0,
         top: 0,
-        height: '70px', // Ukuran tetap navbar di desktop
+        height: '70px',
         justifyContent: 'space-between',
         alignItems: 'center',
         fontWeight: 600,
         fontSize: '16px',
         color: 'white',
         bgcolor: '#0a0a0a',
-        padding: '0 20px', // Padding kiri dan kanan
+        padding: '0 20px',
         zIndex: 999,
         '@media (max-width: 600px)': {
-          height: '80px', // Navbar lebih panjang di mobile
-          padding: '0 10px', // Kurangi padding di mobile
+          height: '80px',
+          padding: '0 10px',
         },
       }}
     >
-      <Typography>{title}</Typography>
+      <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
+        <Typography>{title}</Typography>
+      </Box>
       <WeatherWidget />
     </Box>
   );
 }
-
-
