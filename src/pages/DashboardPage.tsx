@@ -188,8 +188,8 @@ export default function DashboardPage() {
 
             </Box>
 
-            <Box  display="flex" justifyContent="center" alignItems="center" mt="5%" flexDirection="column" gap={6}>
-                <Box bgcolor={'white'} >
+            <Box display="flex" justifyContent="center" alignItems="center" mt="5%" flexDirection="column" gap={6}>
+                <Box  >
                     {filteredData.map((item) => (
                         <CardContentCust
                             key={item.id}
