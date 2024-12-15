@@ -1,4 +1,4 @@
-import React from 'react';
+import NewspaperRoundedIcon from '@mui/icons-material/NewspaperRounded';
 import { Box, IconButton, Tooltip } from '@mui/material';
 import ChatIcon from '@mui/icons-material/Chat';
 import HomeIcon from '@mui/icons-material/Home';
@@ -19,7 +19,7 @@ export default function SidebarCust({ handleOpenChat }: SidebarCustProps) {
             sx={{
                 width: 60,
                 position: 'fixed',
-                right: 0,
+                right: 20,
                 top: '20%',
                 bgcolor: '#2c2c2c',
                 borderRadius: '10px',
@@ -34,21 +34,27 @@ export default function SidebarCust({ handleOpenChat }: SidebarCustProps) {
             <IconButton onClick={handleOpenChat} sx={{ color: 'white' }}>
                 <ChatIcon />
             </IconButton>
-            <Tooltip title="Home" >
+            <Tooltip title="Home" placement='left' >
                 <IconButton sx={{ color: 'white' }} onClick={() => navigate('/dashboard')} >
                     <HomeIcon fontSize="large" />
                 </IconButton>
             </Tooltip>
 
-            <Tooltip title="Search" >
+            <Tooltip title="Search" placement='left' >
                 <IconButton sx={{ color: 'white' }} onClick={() => navigate('/search')} >
                     <SearchIcon fontSize="large" />
                 </IconButton>
             </Tooltip>
 
-            <Tooltip title="News" >
+            {/* <Tooltip title="News" > */}
+            <IconButton sx={{ color: 'white' }}>
+                <AddCircleIcon fontSize="large" />
+            </IconButton>
+            {/* </Tooltip> */}
+
+            <Tooltip title="News" placement='left' >
                 <IconButton sx={{ color: 'white' }} onClick={() => navigate('/news')}>
-                    <AddCircleIcon fontSize="large" />
+                    <NewspaperRoundedIcon fontSize="large" />
                 </IconButton>
             </Tooltip>
 
@@ -56,7 +62,7 @@ export default function SidebarCust({ handleOpenChat }: SidebarCustProps) {
                 <FavoriteIcon fontSize="large" />
             </IconButton>
 
-            <Tooltip title="Profile" >
+            <Tooltip title="Profile" placement='left' >
                 <IconButton sx={{ color: 'white' }} onClick={() => navigate('/profile')} >
                     <AccountCircleIcon fontSize="large" />
                 </IconButton>

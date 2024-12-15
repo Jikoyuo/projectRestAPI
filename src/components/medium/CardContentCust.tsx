@@ -108,7 +108,14 @@ export default function CardContentCust({ title, date, images, description, comm
                     }
                     title={title}
                     subheader={date}
+                    sx={{
+                        '& .MuiCardHeader-subheader': {
+                            color: 'white',
+                            fontSize: '14px',
+                        },
+                    }}
                 />
+
 
                 {isMultipleImages ? (
                     <div style={{ position: 'relative' }}>

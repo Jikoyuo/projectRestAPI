@@ -8,9 +8,11 @@ import {
     Card,
     CardContent,
     CardMedia,
-    Link,
 } from '@mui/material';
-import { styled } from '@mui/material/styles'; // Gunakan ini untuk memastikan penggunaan theme
+import { styled } from '@mui/material/styles';
+import { Link } from 'react-router-dom';
+import WeatherWidget from '../components/weather/WeatherWidget';
+import SidebarCust from '../components/navbar/SidebarCust';
 
 type Article = {
     title: string;
@@ -38,6 +40,7 @@ const NewsPage: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const [query, setQuery] = useState<string>('');
+    const [isFriendListOpen, setFriendListOpen] = useState(false);
 
     const apiKey = '646a9395459048808fbfcc427636781f';
 
@@ -77,12 +80,13 @@ const NewsPage: React.FC = () => {
                 padding: '20px',
             }}
         >
+            <SidebarCust handleOpenChat={() => setFriendListOpen(true)} />
             <Typography
                 variant="h4"
                 textAlign="center"
                 marginBottom={3}
                 fontWeight="bold"
-                color="primary"
+                color="white"
             >
                 News
             </Typography>
@@ -139,23 +143,24 @@ const NewsPage: React.FC = () => {
                                     variant="h6"
                                     fontWeight="bold"
                                     marginBottom={1}
+                                    color='white'
                                 >
                                     {article.title}
                                 </Typography>
                                 <Typography
                                     variant="body2"
-                                    color="text.secondary"
+                                    color='#888'
                                     marginBottom={2}
+
                                 >
                                     {article.description || 'No description available.'}
                                 </Typography>
                                 <Link
-                                    href={article.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    sx={{
+                                    to={`/news-detail`}
+                                    state={{ article }}
+                                    style={{
                                         textDecoration: 'none',
-                                        color: 'primary.main',
+                                        color: 'white',
                                         fontWeight: 'bold',
                                     }}
                                 >
@@ -170,6 +175,8 @@ const NewsPage: React.FC = () => {
                     </Typography>
                 )}
             </Box>
+
+            <WeatherWidget />
         </Box>
     );
 };
