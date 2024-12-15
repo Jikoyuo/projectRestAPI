@@ -25,17 +25,16 @@ import { useState } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { useEffect } from 'react';
+
 interface CardContentCustProps {
     title: string;
     date: string;
-    images: string[];  // Modified to support multiple images
+    images: { imageData: string }[];  // Assuming images is an array of objects with imageData
     description: string;
-    comments: string[]; // List of comments for simplicity
+    comments: string[];
     likes: string;
-    postId: string
+    postId: string;
 }
-
-
 
 interface ExpandMoreProps {
     expand: boolean;
@@ -52,7 +51,9 @@ const ExpandMore = styled((props: ExpandMoreProps & React.ComponentProps<typeof 
     }),
 }));
 
-export default function CardContentCust({title, date, images, description, comments,likes, postId  }: CardContentCustProps) {
+export default function CardContentCust({
+    title, date, images, description, comments, likes, postId
+}: CardContentCustProps) {
     const [expanded, setExpanded] = React.useState(false);
     const [liked, setLiked] = React.useState(false);
     const [commentText, setCommentText] = React.useState("");
@@ -66,62 +67,41 @@ export default function CardContentCust({title, date, images, description, comme
     useEffect(() => {
         console.log('images', images);
         if (Array.isArray(likes)) {
-            // Check if the user has already liked the post by ensuring 'likedBy' is defined
-            console.log('Likes array:', likes);
             const userLiked = likes.some((like: any) => like?.likedBy?.id === userId);
-            
             setLiked(userLiked);
-            console.log('User has already liked the post:', userLiked);
-    
-            // Set the like count from the likes array
             setLikeCount(likes.length);
         }
     }, [likes, userId]);
-    
 
     const handleExpandClick = () => setExpanded(!expanded);
     const handleLikeClick = async (userId: string, postId: string) => {
-        console.log('User ID:', userId);  // Check the userId
-        console.log('Post ID:', postId);  // Check the postId
-    
-        // Toggle local like status
         const newLikeStatus = !liked;
         setLiked(newLikeStatus);
-    
-        // Update like count locally
         const newLikeCount = newLikeStatus ? likeCount + 1 : likeCount - 1;
         setLikeCount(newLikeCount);
-    
         try {
-            // Make API call to update like status on the server
-            console.log(postId);
             await axios.post(`http://localhost:8081/api/likes/${userId}/${postId}`);
-            console.log('Like status updated successfully.');
         } catch (error) {
-            console.error('Error updating like status:', error);
-            // Revert like status and count if the API request fails
             setLiked(!newLikeStatus);
-            setLikeCount(likeCount); // Revert to previous like count
+            setLikeCount(likeCount);
         }
     };
-    
-    
+
     const handleCommentClick = () => {
         setCommentCount(commentCount + 1);
         setCommentText("");
     };
+
     const handleAvatarClick = () => {
         navigate('/profile');
     };
-    const handleCardClick = () => {
-        
-        navigate(`/post-detail/${postId}`);
 
+    const handleCardClick = () => {
+        navigate(`/post-detail/${postId}`);
     };
 
     const isMultipleImages = images.length > 1;
 
-    // To control the slider's next and previous actions
     const sliderRef = React.useRef<Slider | null>(null);
 
     const handlePrevClick = () => {
@@ -149,9 +129,8 @@ export default function CardContentCust({title, date, images, description, comme
                 bgcolor: '#181818',
                 color: 'white',
                 mb: '10px',
-                // Mobile responsiveness
                 '@media (max-width: 600px)': {
-                    maxWidth: '100%', // Ensure card fits within mobile screen
+                    maxWidth: '100%',
                 }
             }}>
                 <CardHeader
@@ -186,17 +165,18 @@ export default function CardContentCust({title, date, images, description, comme
                             slidesToScroll={1}
                             afterChange={handleSlideChange}
                         >
-                            {images.slice(0, 5).map((image, index) => (
-                            <div key={index}>
-                                <CardMedia
-                                    component="img"
-                                    height="194"
-                                    image={`data:image/png;base64,${image.imageData}`}
-                                    alt={`image-${index + 1}`}
-                                    onClick={handleCardClick}
-                                />
-                            </div>
-                        ))}
+                            {images.map((image, index) => (
+                                console.log('image', image),
+                                <div key={index}>
+                                    <CardMedia
+                                        component="img"
+                                        height="194"
+                                        image={`data:image/png;base64,${image}`}
+                                        alt={`image-${index + 1}`}
+                                        onClick={handleCardClick}
+                                    />
+                                </div>
+                            ))}
                         </Slider>
                         <Typography
                             sx={{
@@ -211,7 +191,6 @@ export default function CardContentCust({title, date, images, description, comme
                         >
                             {currentIndex + 1}/{images.length}
                         </Typography>
-                        {/* Left and Right Swipe Icons */}
                         <IconButton
                             onClick={handlePrevClick}
                             sx={{
@@ -240,7 +219,7 @@ export default function CardContentCust({title, date, images, description, comme
                         </IconButton>
                     </div>
                 ) : (
-                    <CardMedia component="img" height="194" image={images[0]} alt="image-1" onClick={handleCardClick} />
+                    <CardMedia component="img" height="194" image={`data:image/png;base64,${images}`} alt="image-1" onClick={handleCardClick} />
                 )}
 
                 <CardContent onClick={handleCardClick}>

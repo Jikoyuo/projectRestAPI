@@ -124,19 +124,29 @@ export default function DashboardPage() {
 
             <Box display="flex" justifyContent="center" alignItems="center" mt="5%" flexDirection="column" gap={6}>
                 <Box  >
-                    {filteredData.map((item) => (
-                        console.log(item.postId),
-                        <CardContentCust
-                            key={item.postId}
-                            title={item.user.username}
-                            date={item.createdAt}
-                            images={item.mediaUrl}
-                            description={item.caption}
-                            comments={item.comments}
-                            likes={item.likes}
-                            postId={item.postId}
-                        />
-                    ))}
+                {filteredData.map((item) => {
+                // Debugging: log item properties to verify
+
+                // Extract imageData from mediaUrl if it's an array of objects
+                const imageData = Array.isArray(item.mediaUrl) && item.mediaUrl.length > 0
+                    ? item.mediaUrl[0].imageData // Assuming the first image is to be displayed
+                    : null;
+
+
+                return (
+                    <CardContentCust
+                        key={item.postId}
+                        title={item.user.username}
+                        date={item.createdAt}
+                        images={imageData ? [imageData] : []}
+                        description={item.caption}
+                        comments={item.comments}
+                        likes={item.likes}
+                        postId={item.postId}
+                    />
+                );
+            })}
+
                 </Box>
             </Box>
 
