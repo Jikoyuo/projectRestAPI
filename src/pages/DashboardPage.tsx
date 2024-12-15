@@ -166,6 +166,9 @@ export default function DashboardPage() {
                         '& .MuiInputLabel-root': { color: 'white' },
                         '& .MuiInputLabel-root.Mui-focused': { color: 'white' },
                         '& .MuiOutlinedInput-input': { color: 'white' },
+                        '@media (max-width: 850px)': {
+                            maxWidth: '70%',
+                        }
                     }}
                 />
             </Box>

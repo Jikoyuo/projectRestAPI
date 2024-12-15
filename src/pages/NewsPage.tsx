@@ -13,6 +13,7 @@ import { styled } from '@mui/material/styles';
 import { Link } from 'react-router-dom';
 import WeatherWidget from '../components/weather/WeatherWidget';
 import SidebarCust from '../components/navbar/SidebarCust';
+import NavbarCust from '../components/navbar/NavbarCust';
 
 type Article = {
     title: string;
@@ -80,16 +81,8 @@ const NewsPage: React.FC = () => {
                 padding: '20px',
             }}
         >
+            <NavbarCust title='News' />
             <SidebarCust handleOpenChat={() => setFriendListOpen(true)} />
-            <Typography
-                variant="h4"
-                textAlign="center"
-                marginBottom={3}
-                fontWeight="bold"
-                color="white"
-            >
-                News
-            </Typography>
             <Box textAlign="center" marginBottom={3}>
                 <TextField
                     variant="outlined"
@@ -118,7 +111,7 @@ const NewsPage: React.FC = () => {
                             color: 'white',
                         },
                         '& .MuiOutlinedInput-input': {
-                            color: 'white', 
+                            color: 'white',
                         },
 
                     }}
@@ -197,7 +190,6 @@ const NewsPage: React.FC = () => {
                 )}
             </Box>
 
-            <WeatherWidget />
         </Box>
     );
 };

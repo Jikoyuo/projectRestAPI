@@ -1,4 +1,4 @@
-import { Box, TextField } from '@mui/material';
+import { Box, TextField, useMediaQuery } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import NavbarCust from '../components/navbar/NavbarCust';
 import SidebarCust from '../components/navbar/SidebarCust';
@@ -119,6 +119,8 @@ export default function DashboardPage() {
     // Sort data by number of comments to find the "trending" posts
     const trendingData = [...data].sort((a, b) => b.comment.length - a.comment.length).slice(0, 3); // Top 3 trending posts
 
+    const isMobile = useMediaQuery('(max-width:1500px)');
+
     return (
         <Box>
             <NavbarCust title='Search' />
@@ -150,7 +152,9 @@ export default function DashboardPage() {
             </Box>
 
             {/* Trending Box */}
-            <TrendingBox trendingData={trendingData} />
+            {!isMobile && (
+                <TrendingBox trendingData={trendingData} />
+            )}
 
             <WeatherWidget />
 

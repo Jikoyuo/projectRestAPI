@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Box, Typography, Button } from '@mui/material';
+import NavbarCust from '../components/navbar/NavbarCust';
+import SidebarCust from '../components/navbar/SidebarCust';
 
 const NewsDetail: React.FC = () => {
+    const [isFriendListOpen, setFriendListOpen] = useState(false);
     const location = useLocation();
     const navigate = useNavigate();
     const article = location.state?.article;
@@ -34,11 +37,14 @@ const NewsDetail: React.FC = () => {
                 fontFamily: 'Arial, sans-serif',
             }}
         >
+            <NavbarCust title="News" />
+            <SidebarCust handleOpenChat={() => setFriendListOpen(true)} />
             <Typography
                 variant="h4"
                 fontWeight="bold"
                 marginBottom={3}
                 textAlign="center"
+                color='white'
             >
                 {article.title}
             </Typography>
@@ -58,17 +64,16 @@ const NewsDetail: React.FC = () => {
             <Typography
                 variant="body1"
                 marginBottom={2}
-                sx={{ lineHeight: 1.8, color: 'text.secondary' }}
+                sx={{ lineHeight: 1.8, color: '#888' }}
             >
                 {article.description || 'No description available.'}
             </Typography>
             <Button
                 variant="contained"
-                color="primary"
                 href={article.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                sx={{ marginTop: '10px' }}
+                sx={{ marginTop: '10px', backgroundColor: 'white', color: '#888', fontSize: '14px', fontWeight: 'bold' }}
             >
                 Read Full Article
             </Button>
