@@ -94,7 +94,7 @@ export default function DashboardPage() {
                 title: "Kim Jong Un menguasai korea selatan",
                 date: "March 10, 2020",
                 image: ["/src/assets/img/file.jpg"],
-                description: "A quick and easy stir fry recipe that's packed with fresh vegetables.",
+                description: "tes search, anjay",
                 comment: ["tes", "LUCU !"]
             },
             {
@@ -124,9 +124,11 @@ export default function DashboardPage() {
     const filteredData = data.filter((item) => {
         return (
             item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            item.description.toLowerCase().includes(searchQuery.toLowerCase()) || // Tambahkan filter untuk description
             item.comment.some((comment: string) => comment.toLowerCase().includes(searchQuery.toLowerCase()))
         );
     });
+
 
     useEffect(() => {
         if (location.state && location.state.loginSuccess) {
