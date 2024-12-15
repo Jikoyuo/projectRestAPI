@@ -147,6 +147,8 @@ export default function DashboardPage() {
                         images={item.image}
                         description={item.description}
                         comments={item.comment}
+                        likes={item.likes}
+                        postId={item.postId}
                     />
                 ))}
             </Box>
