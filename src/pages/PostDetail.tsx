@@ -49,7 +49,7 @@ const PostDetail = () => {
                 .then((response) => {
                     const newComment = response.data.comment;
                     setComments([...comments, newComment]);
-                    setCommentText('');
+                    
                 })
                 .catch((error) => {
                     console.error('Error adding comment:', error);
@@ -210,7 +210,7 @@ const PostDetail = () => {
                                 </IconButton>
                             </Box>
                             <Typography variant="body2" sx={{ color: 'white', marginTop: 1 }}>
-                                {comment?.content || 'No comment provided'}
+                                {comment?.content || commentText}
                             </Typography>
                             <Typography variant="caption" sx={{ color: '#888' }}>
                                 {new Date(comment?.commentedAt || '').toLocaleString()}
