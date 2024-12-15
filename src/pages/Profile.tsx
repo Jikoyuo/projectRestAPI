@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import { useParams } from 'react-router-dom';
 
 interface User {
     id: string;
@@ -17,6 +18,7 @@ interface User {
 
 const Profile = () => {
     const navigate = useNavigate();
+    const { userId } = useParams();
 
     const [user, setUser] = useState<User | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -24,7 +26,7 @@ const Profile = () => {
 
     useEffect(() => {
         const token = Cookies.get('token');
-        const userId = Cookies.get('userId'); // Pastikan userId disimpan dalam cookie
+        
 
 
         const fetchUserProfile = async () => {

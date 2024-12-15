@@ -21,7 +21,7 @@ createRoot(document.getElementById('root')!).render(
         <Route element={<PrivateRoute />}>
           <Route path="/dashboard" element={<DashboardPages />} />
           <Route path="/comments" element={<CommentsPage />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/profile/:userId" element={<Profile />} />
           <Route path="/post-detail/:postId" element={<PostDetail />} />
           <Route path="/search" element={<SearchPage />} />
           <Route path="/news" element={<NewsPage />} />

@@ -79,13 +79,22 @@ export default function CardContentCust({
         setLiked(newLikeStatus);
         const newLikeCount = newLikeStatus ? likeCount + 1 : likeCount - 1;
         setLikeCount(newLikeCount);
+    
         try {
-            await axios.post(`http://localhost:8081/api/likes/${userId}/${postId}`);
+            if (newLikeStatus) {
+                // Send POST request if the post is liked
+                await axios.post(`http://localhost:8081/api/likes/${userId}/${postId}`);
+            } else {
+                // Send DELETE request if the post is unliked
+                await axios.delete(`http://localhost:8081/api/likes/${userId}/${postId}`);
+            }
         } catch (error) {
+            // If the API call fails, revert the like status and count
             setLiked(!newLikeStatus);
             setLikeCount(likeCount);
         }
     };
+    
 
     const handleCommentClick = () => {
         setCommentCount(commentCount + 1);
@@ -93,7 +102,7 @@ export default function CardContentCust({
     };
 
     const handleAvatarClick = () => {
-        navigate('/profile');
+        navigate(`/profile/${userId}`);
     };
 
     const handleCardClick = () => {
