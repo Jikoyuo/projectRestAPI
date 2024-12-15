@@ -1,5 +1,5 @@
 import NewspaperRoundedIcon from '@mui/icons-material/NewspaperRounded';
-import { Box, IconButton, Tooltip } from '@mui/material';
+import { Box, IconButton, Tooltip, useMediaQuery } from '@mui/material';
 import ChatIcon from '@mui/icons-material/Chat';
 import HomeIcon from '@mui/icons-material/Home';
 import SearchIcon from '@mui/icons-material/Search';
@@ -14,57 +14,67 @@ interface SidebarCustProps {
 
 export default function SidebarCust({ handleOpenChat }: SidebarCustProps) {
     const navigate = useNavigate();
+    const isMobile = useMediaQuery('(max-width:800px)');
+
+    // Define icon size based on screen size
+    const iconSize = isMobile ? 'small' : 'large';
+
     return (
         <Box
             sx={{
-                width: 60,
+                width: isMobile ? '100%' : 60,
                 position: 'fixed',
-                right: 20,
-                top: '20%',
+                bottom: isMobile ? 0 : 'auto',
+                left: isMobile ? 0 : 'auto',
+                right: isMobile ? 0 : 20,
+                top: isMobile ? 'auto' : '20%',
                 bgcolor: '#2c2c2c',
-                borderRadius: '10px',
+                borderRadius: isMobile ? '0' : '10px',
                 boxShadow: 3,
                 display: 'flex',
-                flexDirection: 'column',
+                flexDirection: isMobile ? 'row' : 'column',
+                justifyContent: isMobile ? 'space-evenly' : 'center',
                 alignItems: 'center',
                 gap: 2,
                 padding: 2,
+                zIndex: 10,
             }}
         >
             <IconButton onClick={handleOpenChat} sx={{ color: 'white' }}>
-                <ChatIcon />
+                <ChatIcon fontSize={iconSize} />
             </IconButton>
-            <Tooltip title="Home" placement='left' >
-                <IconButton sx={{ color: 'white' }} onClick={() => navigate('/dashboard')} >
-                    <HomeIcon fontSize="large" />
+
+            <Tooltip title="Home" placement="left">
+                <IconButton sx={{ color: 'white' }} onClick={() => navigate('/dashboard')}>
+                    <HomeIcon fontSize={iconSize} />
                 </IconButton>
             </Tooltip>
 
-            <Tooltip title="Search" placement='left' >
-                <IconButton sx={{ color: 'white' }} onClick={() => navigate('/search')} >
-                    <SearchIcon fontSize="large" />
+            <Tooltip title="Search" placement="left">
+                <IconButton sx={{ color: 'white' }} onClick={() => navigate('/search')}>
+                    <SearchIcon fontSize={iconSize} />
                 </IconButton>
             </Tooltip>
 
-            <Tooltip title="Add Post" placement='left' >
-                <IconButton sx={{ color: 'white' }} onClick={() => navigate('/addPost')} >
-                    <AddCircleIcon fontSize="large" />
+            <Tooltip title="Add Post" placement="left">
+                <IconButton sx={{ color: 'white' }} onClick={() => navigate('/addPost')}>
+                    <AddCircleIcon fontSize={iconSize} />
                 </IconButton>
             </Tooltip>
 
-            <Tooltip title="News" placement='left' >
+            <Tooltip title="News" placement="left">
                 <IconButton sx={{ color: 'white' }} onClick={() => navigate('/news')}>
-                    <NewspaperRoundedIcon fontSize="large" />
+                    <NewspaperRoundedIcon fontSize={iconSize} />
                 </IconButton>
             </Tooltip>
 
             <IconButton sx={{ color: 'white' }}>
-                <FavoriteIcon fontSize="large" />
+                <FavoriteIcon fontSize={iconSize} />
             </IconButton>
 
-            <Tooltip title="Profile" placement='left' >
-                <IconButton sx={{ color: 'white' }} onClick={() => navigate('/profile')} >
-                    <AccountCircleIcon fontSize="large" />
+            <Tooltip title="Profile" placement="left">
+                <IconButton sx={{ color: 'white' }} onClick={() => navigate('/profile')}>
+                    <AccountCircleIcon fontSize={iconSize} />
                 </IconButton>
             </Tooltip>
         </Box>

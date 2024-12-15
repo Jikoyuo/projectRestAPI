@@ -98,8 +98,29 @@ const NewsPage: React.FC = () => {
                     onChange={handleInputChange}
                     sx={{
                         width: '100%',
-                        backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                        borderRadius: '5px',
+                        '& .MuiOutlinedInput-root': {
+                            bgcolor: '#2c2c2c',
+                            borderRadius: '16px',
+                            '& fieldset': {
+                                borderColor: '#ccc',
+                            },
+                            '&:hover fieldset': {
+                                borderColor: '#888',
+                            },
+                            '&.Mui-focused fieldset': {
+                                borderColor: '#2c2c2c',
+                            },
+                        },
+                        '& .MuiInputLabel-root': {
+                            color: 'white',
+                        },
+                        '& .MuiInputLabel-root.Mui-focused': {
+                            color: 'white',
+                        },
+                        '& .MuiOutlinedInput-input': {
+                            color: 'white', 
+                        },
+
                     }}
                 />
             </Box>

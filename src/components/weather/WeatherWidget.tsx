@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Box, Typography, Paper } from '@mui/material';
+import { Box, Typography, Paper, useMediaQuery } from '@mui/material';
 import Particles from 'react-tsparticles';
 
 interface WeatherData {
@@ -11,26 +11,23 @@ interface WeatherData {
     weather: Array<{
         main: string;
         description: string;
-        icon: string;  // Add icon to handle weather condition image
+        icon: string;
     }>;
 }
 
 const WeatherWidget: React.FC = () => {
     const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
+    const isMobile = useMediaQuery('(max-width:600px)'); // Check if the screen size is mobile
 
     useEffect(() => {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 async (position) => {
                     const { latitude, longitude } = position.coords;
-                    // const latitude = -7.7158231841089915
-                    // const longitude = 110.50213276367616
-                    const API_Key = "0652b738fc769b49794492b12432e77e"
-                    console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+                    const API_Key = "0652b738fc769b49794492b12432e77e";
                     try {
                         const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${API_Key}&units=metric`);
                         setWeatherData(response.data);
-                        console.log(response.data);
                     } catch (error) {
                         console.error("Error fetching weather data:", error);
                     }
@@ -46,15 +43,20 @@ const WeatherWidget: React.FC = () => {
         <Box sx={weatherWidgetStyles}>
             {weatherData ? (
                 <Paper sx={weatherPaperStyles} elevation={3}>
-                    <Typography variant="h6">{weatherData.name}</Typography>
-                    <Typography variant="body2">{weatherData.weather[0].description}</Typography>
-                    <Typography variant="h5">{weatherData.main.temp}°C</Typography>
+                    <Box sx={{ display: 'flex', flexDirection: { xs: 'row', sm: 'column' }, alignItems: 'center' }}>
+                        <Typography variant="h6" sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}>{weatherData.name}</Typography>
+                        {/* Only show description if not on mobile */}
+                        {!isMobile && (
+                            <Typography variant="body2" sx={{ fontSize: { xs: '0.8rem', sm: '1rem' } }}>{weatherData.weather[0].description}</Typography>
+                        )}
+                        <Typography variant="h5" sx={{ fontSize: { xs: '1.5rem', sm: '2rem' } }}>{weatherData.main.temp}°C</Typography>
 
-                    <img
-                        src={`http://openweathermap.org/img/wn/${weatherData.weather[0].icon}.png`}
-                        alt={weatherData.weather[0].description}
-                        style={{ width: '50px', height: '50px', marginTop: '10px' }}
-                    />
+                        <img
+                            src={`http://openweathermap.org/img/wn/${weatherData.weather[0].icon}.png`}
+                            alt={weatherData.weather[0].description}
+                            style={{ width: '50px', height: '50px', marginTop: '10px' }}
+                        />
+                    </Box>
 
                     {/* Show particles effect for rain */}
                     {weatherData.weather[0].main.toLowerCase() === "rain" && (
@@ -92,22 +94,6 @@ const WeatherWidget: React.FC = () => {
                             }}
                         />
                     )}
-
-                    {/* Optional: Add more images for other weather conditions */}
-                    {weatherData.weather[0].main.toLowerCase() === "clouds" && (
-                        <img
-                            src="https://openweathermap.org/img/wn/04d.png"  // Replace with image URL for clouds
-                            alt="cloudy"
-                            style={{ width: '50px', height: '50px', marginTop: '10px' }}
-                        />
-                    )}
-                    {weatherData.weather[0].main.toLowerCase() === "clear" && (
-                        <img
-                            src="https://openweathermap.org/img/wn/01d.png"  // Replace with image URL for clear weather
-                            alt="clear sky"
-                            style={{ width: '50px', height: '50px', marginTop: '10px' }}
-                        />
-                    )}
                 </Paper>
             ) : (
                 <Typography variant="body2">Loading weather...</Typography>
@@ -118,15 +104,32 @@ const WeatherWidget: React.FC = () => {
 
 const weatherWidgetStyles = {
     position: 'fixed' as 'fixed',
-    bottom: '20px',
-    left: '20px',
+    top: '20px',
+    right: '20px',
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
     color: 'white',
-    padding: '10px',
+    padding: '5px',
     borderRadius: '8px',
     zIndex: 1000,
-    boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.5)',
+    boxShadow: '0px 4px 10 px rgba(0, 0, 0, 0.5)',
     animation: 'fadeIn 2s ease-out',
+    width: '80px', // Ukuran tetap untuk widget di desktop
+    height: '60px', // Ukuran tetap untuk widget di desktop
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    '@media (max-width: 600px)': {
+        top: '10px',
+        right: '10px', // Posisikan lebih dekat ke kanan
+        width: '120px', // Ukuran lebih besar di mobile untuk menampung semua konten
+        height: 'auto', // Sesuaikan tinggi di mobile
+        padding: '5px', // Sesuaikan padding di mobile
+        flexDirection: 'row', // Set menjadi row agar ikon dan data saling sejajar
+        justifyContent: 'space-between', // Beri jarak antar elemen di row
+        alignItems: 'center', // Rata tengah vertikal
+        backgroundColor: 'red'
+    }
 };
 
 const weatherPaperStyles = {
@@ -135,6 +138,16 @@ const weatherPaperStyles = {
     borderRadius: '8px',
     color: 'white',
     textAlign: 'center',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    '@media (max-width: 600px)': {
+        padding: 0, // Adjust padding for smaller screens
+        flexDirection: 'row', // Change to row for mobile\
+        backgroundColor: 'inherit',
+        justifyContent: 'space-between', // Space out elements
+        mr: 2
+    }
 };
 
 export default WeatherWidget;

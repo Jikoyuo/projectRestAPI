@@ -1,4 +1,4 @@
-import { Box, TextField, Button } from '@mui/material';
+import { Box, TextField } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import NavbarCust from '../components/navbar/NavbarCust';
 import SidebarCust from '../components/navbar/SidebarCust';
@@ -124,40 +124,30 @@ export default function DashboardPage() {
     const filteredData = data.filter((item) => {
         return (
             item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            item.description.toLowerCase().includes(searchQuery.toLowerCase()) || // Tambahkan filter untuk description
+            item.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
             item.comment.some((comment: string) => comment.toLowerCase().includes(searchQuery.toLowerCase()))
         );
     });
 
-
     useEffect(() => {
         if (location.state && location.state.loginSuccess) {
-            showSuccessAlert()
-
-            navigate(location.pathname, { replace: true, state: undefined }) //clear state
+            setAlertOpen(true);
+            setTimeout(() => setAlertOpen(false), 2000);
+            navigate(location.pathname, { replace: true, state: undefined });
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [location.state, navigate])
+    }, [location.state, navigate]);
 
     return (
         <Box>
-            <NavbarCust title='Home' />
+            <NavbarCust title="Home" />
             <SidebarCust handleOpenChat={() => setFriendListOpen(true)} />
             <AlertSuccess
                 open={alertOpen}
                 title="Success!"
                 description="Your action was completed successfully."
-                onClose={handleAlertClose}
+                onClose={() => setAlertOpen(false)}
             />
-
-            <Box
-                display="flex"
-                justifyContent="center"
-                alignItems="center"
-                mt={3}
-                sx={{ width: '100%' }}
-
-            >
+            <Box display="flex" justifyContent="center" alignItems="center" mt={3} sx={{ width: '100%' }}>
                 <TextField
                     label="Search Username or Tweet"
                     variant="outlined"
@@ -169,29 +159,31 @@ export default function DashboardPage() {
                         '& .MuiOutlinedInput-root': {
                             bgcolor: '#2c2c2c',
                             borderRadius: '16px',
-                            '& fieldset': {
-                                borderColor: '#ccc',
-                            },
-                            '&:hover fieldset': {
-                                borderColor: '#888',
-                            },
-                            '&.Mui-focused fieldset': {
-                                borderColor: '#2c2c2c',
-                            },
+                            '& fieldset': { borderColor: '#ccc' },
+                            '&:hover fieldset': { borderColor: '#888' },
+                            '&.Mui-focused fieldset': { borderColor: '#2c2c2c' },
                         },
-                        '& .MuiInputLabel-root': {
-                            color: 'white',
-                        },
-                        '& .MuiInputLabel-root.Mui-focused': {
-                            color: 'white',
-                        },
+                        '& .MuiInputLabel-root': { color: 'white' },
+                        '& .MuiInputLabel-root.Mui-focused': { color: 'white' },
+                        '& .MuiOutlinedInput-input': { color: 'white' },
                     }}
                 />
-
             </Box>
 
-            <Box display="flex" justifyContent="center" alignItems="center" mt="5%" flexDirection="column" gap={6}>
-                <Box  >
+            <Box ml={'15%'} display="flex" justifyContent="center" alignItems="center" mt="5%" flexDirection="column" gap={6} sx={{
+                '@media (max-width: 600px)': {
+                    width: '70%',
+                    gap: 3,
+                    ml: '17%'
+                },
+                '@media (min-width: 600px) and (max-width: 960px)': {
+                    width: '70%',
+                },
+                '@media (min-width: 960px)': {
+                    width: '70%',
+                },
+            }}>
+                <Box>
                     {filteredData.map((item) => (
                         <CardContentCust
                             key={item.id}
@@ -205,7 +197,8 @@ export default function DashboardPage() {
                 </Box>
             </Box>
 
-            <WeatherWidget />
+
+            {/* <WeatherWidget /> */}
 
             <FriendListModal
                 open={isFriendListOpen}

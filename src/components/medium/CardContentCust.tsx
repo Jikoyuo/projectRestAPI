@@ -94,7 +94,18 @@ export default function CardContentCust({ title, date, images, description, comm
 
     return (
         <Box sx={{ bgcolor: '#2c2c2c', paddingY: '12px', paddingX: '32px', borderRadius: '18px', mb: '12px' }} >
-            <Card sx={{ width: 505, height: 'fit-content', bgcolor: '#181818', color: 'white', mb: '10px' }}>
+            <Card sx={{
+                width: '100%',
+                maxWidth: 505,
+                height: 'fit-content',
+                bgcolor: '#181818',
+                color: 'white',
+                mb: '10px',
+                // Mobile responsiveness
+                '@media (max-width: 600px)': {
+                    maxWidth: '100%', // Ensure card fits within mobile screen
+                }
+            }}>
                 <CardHeader
                     avatar={
                         <Avatar sx={{ bgcolor: red[500], cursor: 'grab' }} aria-label="recipe" onClick={handleAvatarClick}>
@@ -115,7 +126,6 @@ export default function CardContentCust({ title, date, images, description, comm
                         },
                     }}
                 />
-
 
                 {isMultipleImages ? (
                     <div style={{ position: 'relative' }}>
@@ -180,7 +190,7 @@ export default function CardContentCust({ title, date, images, description, comm
                 )}
 
                 <CardContent onClick={handleCardClick}>
-                    <Typography variant="body2" sx={{ color: 'white' }}>
+                    <Typography variant="body2" sx={{ color: 'white', fontSize: '14px' }}>
                         {description}
                     </Typography>
                 </CardContent>
@@ -195,7 +205,7 @@ export default function CardContentCust({ title, date, images, description, comm
                     >
                         <FavoriteIcon sx={{ color: liked ? red[500] : 'white' }} />
                     </IconButton>
-                    <Typography variant="body2" sx={{ color: 'white', marginLeft: '8px' }}>
+                    <Typography variant="body2" sx={{ color: 'white', marginLeft: '8px', fontSize: '12px' }}>
                         {likeCount} Likes
                     </Typography>
 
@@ -208,7 +218,7 @@ export default function CardContentCust({ title, date, images, description, comm
                     >
                         <CommentIcon sx={{ color: 'white' }} />
                     </IconButton>
-                    <Typography variant="body2" sx={{ color: 'white', marginLeft: '8px' }}>
+                    <Typography variant="body2" sx={{ color: 'white', marginLeft: '8px', fontSize: '12px' }}>
                         {commentCount} Comments
                     </Typography>
 
