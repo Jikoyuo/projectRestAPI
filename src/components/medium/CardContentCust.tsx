@@ -21,14 +21,21 @@ import "slick-carousel/slick/slick-theme.css";
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { Box } from '@mui/material';
-
+import { useState } from 'react';
+import axios from 'axios';
+import Cookies from 'js-cookie';
+import { useEffect } from 'react';
 interface CardContentCustProps {
     title: string;
     date: string;
     images: string[];  // Modified to support multiple images
     description: string;
     comments: string[]; // List of comments for simplicity
+    likes: string;
+    postId: string
 }
+
+
 
 interface ExpandMoreProps {
     expand: boolean;
@@ -45,21 +52,59 @@ const ExpandMore = styled((props: ExpandMoreProps & React.ComponentProps<typeof 
     }),
 }));
 
-export default function CardContentCust({ title, date, images, description, comments }: CardContentCustProps) {
+export default function CardContentCust({title, date, images, description, comments,likes, postId  }: CardContentCustProps) {
     const [expanded, setExpanded] = React.useState(false);
     const [liked, setLiked] = React.useState(false);
     const [commentText, setCommentText] = React.useState("");
     const [likeCount, setLikeCount] = React.useState(0);
     const [commentCount, setCommentCount] = React.useState(comments.length);
     const [currentIndex, setCurrentIndex] = React.useState(0);
+    const [userId, setUserId] = useState<string>(Cookies.get('userId') || '');
 
     const navigate = useNavigate();
 
+    useEffect(() => {
+        if (Array.isArray(likes)) {
+            // Check if the user has already liked the post by ensuring 'likedBy' is defined
+            console.log('Likes array:', likes);
+            const userLiked = likes.some((like: any) => like?.likedBy?.id === userId);
+            
+            setLiked(userLiked);
+            console.log('User has already liked the post:', userLiked);
+    
+            // Set the like count from the likes array
+            setLikeCount(likes.length);
+        }
+    }, [likes, userId]);
+    
+
     const handleExpandClick = () => setExpanded(!expanded);
-    const handleLikeClick = () => {
-        setLiked(!liked);
-        setLikeCount(liked ? likeCount - 1 : likeCount + 1);
+    const handleLikeClick = async (userId: string, postId: string) => {
+        console.log('User ID:', userId);  // Check the userId
+        console.log('Post ID:', postId);  // Check the postId
+    
+        // Toggle local like status
+        const newLikeStatus = !liked;
+        setLiked(newLikeStatus);
+    
+        // Update like count locally
+        const newLikeCount = newLikeStatus ? likeCount + 1 : likeCount - 1;
+        setLikeCount(newLikeCount);
+    
+        try {
+            // Make API call to update like status on the server
+            console.log(postId);
+            await axios.post(`http://localhost:8081/api/likes/${userId}/${postId}`);
+            console.log('Like status updated successfully.');
+        } catch (error) {
+            console.error('Error updating like status:', error);
+            // Revert like status and count if the API request fails
+            setLiked(!newLikeStatus);
+            setLikeCount(likeCount); // Revert to previous like count
+        }
     };
+    
+    
     const handleCommentClick = () => {
         setCommentCount(commentCount + 1);
         setCommentText("");
@@ -68,7 +113,9 @@ export default function CardContentCust({ title, date, images, description, comm
         navigate('/profile');
     };
     const handleCardClick = () => {
-        navigate('/post-detail');
+        
+        navigate(`/post-detail/${postId}`);
+
     };
 
     const isMultipleImages = images.length > 1;
@@ -197,7 +244,7 @@ export default function CardContentCust({ title, date, images, description, comm
                 <CardActions disableSpacing>
                     <IconButton
                         aria-label="add to favorites"
-                        onClick={handleLikeClick}
+                        onClick={() => handleLikeClick(userId, postId)}
                         sx={{
                             transition: 'transform 0.2s ease-in-out',
                             transform: liked ? 'scale(1.2)' : 'scale(1)',

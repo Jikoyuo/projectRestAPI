@@ -22,7 +22,7 @@ createRoot(document.getElementById('root')!).render(
           <Route path="/dashboard" element={<DashboardPages />} />
           <Route path="/comments" element={<CommentsPage />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/post-detail" element={<PostDetail />} />
+          <Route path="/post-detail/:postId" element={<PostDetail />} />
           <Route path="/search" element={<SearchPage />} />
           <Route path="/news" element={<NewsPage />} />
           <Route path="/news-detail" element={<NewsDetail />} />
