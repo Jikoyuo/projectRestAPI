@@ -50,18 +50,18 @@ export default function CardContentCust({ title, date, images, description, comm
     const [commentText, setCommentText] = React.useState("");
     const [likeCount, setLikeCount] = React.useState(0);
     const [commentCount, setCommentCount] = React.useState(comments.length);
-    const [currentIndex, setCurrentIndex] = React.useState(0);  // Track the current index in the slider
+    const [currentIndex, setCurrentIndex] = React.useState(0);
 
     const navigate = useNavigate();
 
     const handleExpandClick = () => setExpanded(!expanded);
     const handleLikeClick = () => {
         setLiked(!liked);
-        setLikeCount(liked ? likeCount - 1 : likeCount + 1); // Update like count
+        setLikeCount(liked ? likeCount - 1 : likeCount + 1);
     };
     const handleCommentClick = () => {
-        setCommentCount(commentCount + 1); // Increase comment count
-        setCommentText(""); // Clear comment input after posting
+        setCommentCount(commentCount + 1);
+        setCommentText("");
     };
     const handleAvatarClick = () => {
         navigate('/profile');
@@ -88,11 +88,11 @@ export default function CardContentCust({ title, date, images, description, comm
     };
 
     const handleSlideChange = (index: number) => {
-        setCurrentIndex(index);  // Update current index when slide changes
+        setCurrentIndex(index);
     };
 
     return (
-        <Card sx={{ width: 505, height: 'fit-content', bgcolor: '#181818', color: 'white' }}>
+        <Card sx={{ width: 505, height: 'fit-content', bgcolor: '#181818', color: 'white', mb: '15px' }}>
             <CardHeader
                 avatar={
                     <Avatar sx={{ bgcolor: red[500], cursor: 'grab' }} aria-label="recipe" onClick={handleAvatarClick}>
@@ -117,7 +117,7 @@ export default function CardContentCust({ title, date, images, description, comm
                         speed={500}
                         slidesToShow={1}
                         slidesToScroll={1}
-                        afterChange={handleSlideChange}  // Track slide changes
+                        afterChange={handleSlideChange}
                     >
                         {images.slice(0, 5).map((image, index) => (
                             <div key={index}>
@@ -125,7 +125,6 @@ export default function CardContentCust({ title, date, images, description, comm
                             </div>
                         ))}
                     </Slider>
-                    {/* Image Index Indicator */}
                     <Typography
                         sx={{
                             position: 'absolute',
