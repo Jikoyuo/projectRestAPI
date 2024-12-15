@@ -139,7 +139,7 @@ export default function DashboardPage() {
 
     return (
         <Box>
-            <NavbarCust />
+            <NavbarCust title='Home' />
             <SidebarCust handleOpenChat={() => setFriendListOpen(true)} />
             <AlertSuccess
                 open={alertOpen}

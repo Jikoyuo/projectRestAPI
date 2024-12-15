@@ -46,11 +46,11 @@ export default function SidebarCust({ handleOpenChat }: SidebarCustProps) {
                 </IconButton>
             </Tooltip>
 
-            {/* <Tooltip title="News" > */}
-            <IconButton sx={{ color: 'white' }}>
-                <AddCircleIcon fontSize="large" />
-            </IconButton>
-            {/* </Tooltip> */}
+            <Tooltip title="Add Post" placement='left' >
+                <IconButton sx={{ color: 'white' }} onClick={() => navigate('/addPost')} >
+                    <AddCircleIcon fontSize="large" />
+                </IconButton>
+            </Tooltip>
 
             <Tooltip title="News" placement='left' >
                 <IconButton sx={{ color: 'white' }} onClick={() => navigate('/news')}>

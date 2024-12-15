@@ -121,7 +121,7 @@ export default function DashboardPage() {
 
     return (
         <Box>
-            <NavbarCust />
+            <NavbarCust title='Search' />
             <SidebarCust handleOpenChat={() => setFriendListOpen(true)} />
 
             {/* Search Bar */}
